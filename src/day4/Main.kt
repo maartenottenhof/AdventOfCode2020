@@ -3,72 +3,30 @@ package day4
 import java.io.File
 
 fun main(args: Array<String>) {
-    val entries = File("src/day4/input.txt").readLines()
+    val passports = File("src/day4/input.txt").readText()
+        .split("\n\n")
+        .map { it.replace("\n", " ") }
 
-    println(task1(entries).count());
-    println(task2(task1(entries)).count());
+    println(task1(passports).count());
+    println(task2(task1(passports)).count());
 }
 
-private fun task1(entries: List<String>): List<String> {
-    var passports = arrayOf<String>()
-    var currentPassport = "";
-
-    for (entry in entries) {
-        if (entry.isNotBlank()) {
-            currentPassport += " $entry"
-        } else {
-            passports = passports.plus(currentPassport)
-            currentPassport = ""
-        }
-    }
-
-    val validPassports = passports.map { it.trim() }.filter { it.split(" ").size == 8 }
-    val validCredentials = passports.map { it.trim() }.filter { it.split(" ").size == 7 }
-        .filter { !it.contains("cid") }
-
-    return validCredentials.map { it.plus(" cid:ignore") }.plus(validPassports)
-}
-
-private fun task2(entries: List<String>) = entries
-    .asSequence()
+private fun task1(passports: List<String>) = passports
+    .map(String::trim)
     .map { it.split(" ") }
-    .map { it.sorted() }
-    .map { it.map { i -> i.split(":") } }
-    .mapNotNull {
-        try {
-            Passport(it[0][1], it[1][1], it[2][1], it[3][1], it[4][1], it[5][1], it[6][1], it[7][1])
-        } catch (e: IllegalArgumentException) {
-            null
-        }
-    }
+    .filter { it.size == 8 || (it.size == 7 && it.none() { i -> i.contains("cid") }) }
 
-data class Passport(
-    val byr: String,
-    val cid: String,
-    val ecl: String,
-    val eyr: String,
-    val hcl: String,
-    val hgt: String,
-    val iyr: String,
-    val pid: String
-) {
-    init {
-        require(Integer.valueOf(byr) in 1920..2002)
-        require(ecl in "amb blu brn gry grn hzl oth".split(" "))
-        require(Integer.valueOf(eyr) in 2020..2030)
-        require(hcl.contains("#[a-z0-9]{6}\$".toRegex()))
-        require(
-            when {
-                hgt.contains("cm") -> {
-                    Integer.valueOf(hgt.replace("cm", "")) in 150..193
-                }
-                hgt.contains("in") -> {
-                    Integer.valueOf(hgt.replace("in", "")) in 59..76
-                }
-                else -> false
-            }
-        )
-        require(Integer.valueOf(iyr) in 2010..2020)
-        require(pid.length == 9)
-    }
-}
+private fun task2(entries: List<List<String>>) = entries
+    .map { it.map { i -> i.split(":") }.map { i -> i[0] to i[1] } }
+    .filter { it.all { i -> validators[i.first]?.invoke(i.second)!! } }
+
+private val validators = mapOf<String, (String) -> Boolean>(
+    "byr" to { i -> i.toIntOrNull() in 1920..2002 },
+    "cid" to { _ -> true },
+    "ecl" to { i -> i in listOf("amb", "blu", "brn", "gry", "grn", "hzl", "oth") },
+    "eyr" to { i -> i.toIntOrNull() in 2020..2030 },
+    "hcl" to { i -> i.matches("#[a-z0-9]{6}\$".toRegex()) },
+    "hgt" to { i -> i.matches("(1[5-8][0-9]|19[0-3])cm".toRegex()) || i.matches("(59|6[0-9]|7[0-6])in".toRegex()) },
+    "iyr" to { i -> i.toIntOrNull() in 2010..2020 },
+    "pid" to { i -> i.length == 9 }
+)
