@@ -17,9 +17,8 @@ private fun task1(colour: String, bags: Map<String, Bag>) =
 private fun task2(colour: String, bags: Map<String, Bag>) = bags[colour]?.numberOfInnerBags(bags)
 
 private data class Bag(val colour: String, val innerBags: Map<String, Int>) {
-    fun containsColour(colour: String, bags: Map<String, Bag>): Boolean =
-        if (this.innerBags.keys.contains(colour)) true
-        else this.innerBags.keys.any { bags[it]?.containsColour(colour, bags) == true }
+    fun containsColour(colour: String, bags: Map<String, Bag>): Boolean = this.innerBags.keys.contains(colour) or
+            this.innerBags.keys.any { bags[it]?.containsColour(colour, bags) == true }
 
     fun numberOfInnerBags(bags: Map<String, Bag>): Int =
         this.innerBags.entries.sumBy { (bags[it.key]?.numberOfInnerBags(bags) ?: 0) * it.value + it.value }
