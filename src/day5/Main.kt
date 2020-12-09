@@ -2,7 +2,7 @@ package day5
 
 import java.io.File
 
-fun main(args: Array<String>) {
+fun main() {
     val passIds = File("src/day5/input.txt").readLines()
         .map { it.replace("[BR]".toRegex(), "1") }
         .map { it.replace("[FL]".toRegex(), "0") }

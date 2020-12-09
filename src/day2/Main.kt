@@ -2,7 +2,7 @@ package day2
 
 import java.io.File
 
-fun main(args: Array<String>) {
+fun main() {
     val entries = File("src/day2/input.txt").readLines()
         .map { it.replace(":", "") }
         .map { it.replace("-", " ") }

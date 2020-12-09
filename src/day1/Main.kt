@@ -4,7 +4,7 @@ import java.io.File
 
 const val YEAR = 2020
 
-fun main(args: Array<String>) {
+fun main() {
     val numbers = File("src/day1/input.txt").readLines()
         .map(String::toInt)
 

@@ -2,11 +2,11 @@ package day3
 
 import java.io.File
 
-fun main(args: Array<String>) {
+fun main() {
     val entries = File("src/day3/input.txt").readLines()
 
-    println(task1(entries));
-    println(task2(entries));
+    println(task1(entries))
+    println(task2(entries))
 }
 
 private fun task1(entries: List<String>) = toboggan(entries, 3)

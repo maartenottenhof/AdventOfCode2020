@@ -13,7 +13,7 @@ fun main() {
 private fun task1(instructions: List<List<String>>) = boot(instructions).first
 
 private fun task2(instructions: List<List<String>>) =
-    instructions.mapIndexed { index, list ->
+    instructions.asSequence().mapIndexed { index, list ->
         val newInstructions = instructions.toMutableList()
         newInstructions[index] = listOf(
             when (list[0]) {
@@ -26,7 +26,7 @@ private fun task2(instructions: List<List<String>>) =
     }.first { it.second }.first
 
 private fun boot(instructions: List<List<String>>): Pair<Int, Boolean> {
-    var acc = 0;
+    var acc = 0
     var currentIndex = 0
     val indexesVisited = mutableListOf<Int>()
 

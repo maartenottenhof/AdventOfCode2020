@@ -2,7 +2,7 @@ package day6
 
 import java.io.File
 
-fun main(args: Array<String>) {
+fun main() {
     val forms = File("src/day6/input.txt").readText().split("\n\n")
         .map { it.trim().lines().map(String::toSet) }
 
