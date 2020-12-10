@@ -14,5 +14,5 @@ private fun task1(adapters: List<Int>) = adapters
     .let { it.count { i -> i == 1 } * it.count { i -> i == 3 } }
 
 private fun task2(adapters: List<Int>) = adapters.fold(mapOf(0 to 1L), { acc, i ->
-    acc.plus(i to (i - 3 until i).map { acc[it] ?: 0 }.sum())
+    acc + (i to (i - 3 until i).map { acc[it] ?: 0 }.sum())
 })[adapters.last()]
