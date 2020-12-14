@@ -1,7 +1,6 @@
 package day14
 
 import java.io.File
-import kotlin.math.pow
 
 fun main() {
     val input = File("src/day14/input.txt").readLines()
@@ -10,47 +9,34 @@ fun main() {
     println(task2(input))
 }
 
-private fun task1(input: List<String>): Long {
+private fun task1(input: List<String>) = decode(input) { v, m -> version1Decode(v, m) }
+private fun task2(input: List<String>) = decode(input) { v, m -> version2Decode(v, m) }
+
+private fun decode(input: List<String>, decodingFunction: (Pair<Long, Long>, String) -> (Map<Long, Long>)): Long {
     var mask = ""
-    val register = mutableMapOf<Long, Long>()
-
-    input.forEach {
-        if (it.contains("mask")) mask = it.substringAfter(" = ")
-        else {
-            val values = Regex("\\d+").findAll(it).toList().map(MatchResult::value)
-            register[values[0].toLong()] = values[1].toLong().applyMaskToValue(mask)
-        }
-    }
-
-    return register.values.sum()
+    return input.fold(mapOf<Long, Long>()) { acc, i ->
+        if (i.contains("mask")) acc.also { mask = i.substringAfter(" = ") }
+        else acc + Regex("\\d+").findAll(i).toList().map(MatchResult::value).let { it[0].toLong() to it[1].toLong() }
+            .let { decodingFunction.invoke(it, mask) }
+    }.values.sum()
 }
 
-private fun task2(input: List<String>): Long {
-    var mask = ""
-    val register = mutableMapOf<Long, Long>()
+private fun version1Decode(entry: Pair<Long, Long>, mask: String) =
+    mapOf(entry.first to entry.second.applyMaskToValue(mask))
 
-    input.forEach {
-        if (it.contains("mask")) mask = it.substringAfter(" = ")
-        else {
-            val values = Regex("\\d+").findAll(it).toList().map(MatchResult::value)
-            val maskedAddress = values[0].toLong().applyMaskToAddress(mask)
-            val floatingBits = maskedAddress.mapIndexed() { index, c -> index to c }.filter { i -> i.second == 'X' }
-                .map { i -> i.first }
-            val permutations = IntRange(0, 2.0.pow(floatingBits.size.toDouble()).toInt() - 1).map { i ->
-                i.toString(2).padStart(floatingBits.size, '0')
-            }
-            permutations.map { i ->
-                val temp = maskedAddress.toCharArray()
-                floatingBits.zip(i.toList()).forEach { j ->
-                    temp[j.first] = j.second
-                }
-                temp.joinToString("").toLong(2)
-            }.forEach { i -> register[i] = values[1].toLong() }
-        }
-    }
-
-    return register.values.sum()
+private fun version2Decode(entry: Pair<Long, Long>, mask: String): Map<Long, Long> {
+    val maskedAddress = entry.first.applyMaskToAddress(mask)
+    val floatingIndices = maskedAddress.withIndex().filter { i -> i.value == 'X' }.map { i -> i.index }
+    return (0 until (1 shl floatingIndices.size))
+        .map { it.toString(2).padStart(floatingIndices.size, '0').toList() }
+        .map { maskedAddress.applyPermutation(floatingIndices, it) }
+        .map { it to entry.second }.toMap()
 }
+
+private fun List<Char>.applyPermutation(floatingIndices: List<Int>, permutation: List<Char>) =
+    floatingIndices.zip(permutation.toList()).fold(this.toCharArray()) { acc, pair ->
+        acc.apply { acc[pair.first] = pair.second }
+    }.joinToString("").toLong(2)
 
 private fun Long.applyMaskToValue(mask: String) =
     mask.zip(this.toString(2).padStart(36, '0'))
