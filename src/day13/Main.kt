@@ -13,7 +13,7 @@ fun main() {
 
 private fun task1(buses: List<String>, timestamp: Int) =
     buses.filterNot { it == "x" }.map { it.toInt() }
-        .map { i -> i to generateSequence(i) { it + i }.first { it >= timestamp } }
+        .map { it to timestamp - (timestamp % it) + it }
         .minBy { it.second }.let { (it!!.second - timestamp) * it.first }
 
 private fun task2(buses: List<String>) =
