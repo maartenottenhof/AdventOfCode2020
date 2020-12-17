@@ -13,9 +13,10 @@ private fun task1(input: List<Int>) = playGame(input).elementAt(2020 - input.siz
 private fun task2(input: List<Int>) = playGame(input).elementAt(30000000 - input.size).first
 
 private fun playGame(input: List<Int>): Sequence<Pair<Int, Int>> {
-    val lastSeen = input.subList(0, input.lastIndex).mapIndexed { index, i -> i to index }.toMap().toMutableMap()
+    val lastSeen = IntArray(30000000) { -1 }
+    input.subList(0, input.lastIndex).withIndex().forEach{ lastSeen[it.value] = it.index }
     return generateSequence(input.last() to input.lastIndex) {
-        ((lastSeen[it.first]?.let { i -> (it.second - i) } ?: 0) to (it.second + 1))
+        ((if (lastSeen[it.first] != -1) it.second - lastSeen[it.first] else 0) to (it.second + 1))
             .also { _ -> lastSeen[it.first] = it.second }
     }
 }
