@@ -30,9 +30,9 @@ private fun task2(tiles: List<Tile>): Int {
         .map { it.map(Tile::trimImage) }
         .flatMap { row -> row.first().indices.map { index -> row.joinToString("") { it[index] } } }
 
-    val numberOfDragons = image.possiblePositions().maxOfOrNull { i ->
-        Regex("(?=(#.{" + (image.first().length - 19).toString() + "}#....##....##....###.{" + (image.first().length - 19).toString() + "}#..#..#..#..#..#))")
-            .findAll(i.joinToString("")).count()
+    val numberOfDragons = image.possiblePositions().maxOfOrNull {
+        Regex("(?=(#.{" + (image.size - 19).toString() + "}#....##....##....###.{" + (image.size - 19).toString() + "}#..#..#..#..#..#))")
+            .findAll(it.joinToString("")).count()
     }
 
     return image.joinToString("").count { it == '#' } - (numberOfDragons!! * 15)
