@@ -6,7 +6,7 @@ fun main() {
     val input = File("src/day19/input.txt").readLines()
     val rules = input.subList(0, input.indexOf(""))
         .map { it.split(": ") }
-        .map { it[0] to it[1].replace("\"", "") }.toMap().toMutableMap()
+        .associate { it[0] to it[1].replace("\"", "") }.toMutableMap()
     val messages = input.subList(input.indexOf("") + 1, input.size)
 
     println(task1(rules, messages))

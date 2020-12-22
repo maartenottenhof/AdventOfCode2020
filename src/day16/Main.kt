@@ -7,7 +7,7 @@ fun main() {
     val fields = input.takeWhile { it.isNotBlank() }
         .map { it.substringBefore(":") to it.substringAfter(": ").split("(-|( or ))".toRegex()) }
         .map { it.first to it.second.map(String::toInt) }
-        .map { it.first to ((it.second[0] to it.second[1]) to (it.second[2] to it.second[3])) }.toMap()
+        .associate { it.first to ((it.second[0] to it.second[1]) to (it.second[2] to it.second[3])) }
     val (invalidTickets, validTickets) = input.dropWhile { !it.contains("nearby tickets:") }.drop(1)
         .map { it.split(",").map(String::toInt) }.partition { i -> i.all { it.isValidForAny(fields.values.toList()) } }
     val ownTicket = input.dropWhile { !it.contains("your ticket:") }.drop(1).take(1)

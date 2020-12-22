@@ -3,9 +3,9 @@ package day07
 import java.io.File
 
 fun main() {
-    val bags = File("src/day7/input.txt").readText().split(".").filterNot { it.contains("no other") }
+    val bags = File("src/day07/input.txt").readText().split(".").filterNot { it.contains("no other") }
         .map { it.replace("bag[s]?".toRegex(), "").replace("contain", ",").split(",").map(String::trim) }
-        .map { it[0] to Bag(it[0], toInnerBags(it.subList(1, it.size))) }.toMap()
+        .associate { it[0] to Bag(it[0], toInnerBags(it.subList(1, it.size))) }
 
     println(task1("shiny gold", bags))
     println(task2("shiny gold", bags))
@@ -25,4 +25,4 @@ private data class Bag(val colour: String, val innerBags: Map<String, Int>) {
 }
 
 private fun toInnerBags(input: List<String>) =
-    input.map { it.substring(2) to Integer.parseInt(it.substring(0, 1)) }.toMap()
+    input.associate { it.substring(2) to Integer.parseInt(it.substring(0, 1)) }

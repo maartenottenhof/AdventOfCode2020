@@ -30,7 +30,7 @@ private fun version2Decode(entry: Pair<Long, Long>, mask: String): Map<Long, Lon
     return (0 until (1 shl floatingIndices.size))
         .map { it.toString(2).padStart(floatingIndices.size, '0').toList() }
         .map { maskedAddress.applyPermutation(floatingIndices, it) }
-        .map { it to entry.second }.toMap()
+        .associateWith { entry.second }
 }
 
 private fun List<Char>.applyPermutation(floatingIndices: List<Int>, permutation: List<Char>) =
